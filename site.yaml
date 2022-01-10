@@ -1,0 +1,30 @@
+- hosts: localhost
+  gather_facts: False
+  tasks:
+  - include_vars: data.yaml
+
+  - set_fact:
+      names: "{{ lookup('get_name', gathered=gathered, source='192.0.2.1/32', grant='deny', wantlist=True) }}"
+  - assert:
+      that: names == ['test']
+  
+  - set_fact:
+      names: "{{ lookup('get_name', gathered=gathered, destination='192.0.4.0/25', grant='deny', wantlist=True) }}"
+  - assert:
+      that: names == [123, 'std_acl'] 
+  
+  - set_fact:
+      names: "{{ lookup('get_name', gathered=gathered, source='198.51.100.0', destination='198.51.110.0', grant='deny', wantlist=True) }}"
+  - assert:
+      that: names == [110] 
+
+  - set_fact:
+      names: "{{ lookup('get_name', gathered=gathered, destination='192.0.4.0/25', grant='allow', wantlist=True) }}"
+  - assert:
+      that: names == [] 
+  
+  - set_fact:
+      names: "{{ lookup('get_name', gathered=gathered, destination='::1/128', grant='deny', wantlist=True) }}"
+  - assert:
+      that: names == ['R1_TRAFFIC'] 
+  

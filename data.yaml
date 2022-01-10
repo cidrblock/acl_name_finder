@@ -1,0 +1,96 @@
+gathered:
+  - afi: ipv4
+    acls:
+    - name: std_acl
+      acl_type: standard
+      aces:
+      - grant: deny
+        source:
+          address: 192.168.1.200
+      - grant: deny
+        source:
+          address: 192.168.2.0
+          wildcard_bits: 0.0.0.255
+    - name: 110
+      aces:
+      - sequence: 10
+        protocol_options:
+          icmp:
+            traceroute: true
+      - grant: deny
+        protocol_options:
+          tcp:
+            ack: true
+        source:
+          host: 198.51.100.0
+        destination:
+          host: 198.51.110.0
+          port_protocol:
+            eq: telnet
+    - name: test
+      acl_type: extended
+      aces:
+      - grant: deny
+        protocol_options:
+          tcp:
+            fin: true
+        source:
+          address: 192.0.2.0
+          wildcard_bits: 0.0.0.255
+        destination:
+          address: 192.0.3.0
+          wildcard_bits: 0.0.0.255
+          port_protocol:
+            eq: www
+        option:
+          traceroute: true
+        ttl:
+          eq: 10
+    - name: 123
+      aces:
+      - grant: deny
+        protocol_options:
+          tcp:
+            ack: true
+        source:
+          address: 198.51.100.0
+          wildcard_bits: 0.0.0.255
+        destination:
+          address: 198.51.101.0
+          wildcard_bits: 0.0.0.255
+          port_protocol:
+            eq: telnet
+        tos:
+          service_value: 12
+      - grant: deny
+        protocol_options:
+          tcp:
+            ack: true
+        source:
+          address: 192.0.3.0
+          wildcard_bits: 0.0.0.255
+        destination:
+          address: 192.0.4.0
+          wildcard_bits: 0.0.0.255
+          port_protocol:
+            eq: www
+        dscp: ef
+        ttl:
+          lt: 20
+  - afi: ipv6
+    acls:
+    - name: R1_TRAFFIC
+      aces:
+      - grant: deny
+        protocol_options:
+          tcp:
+            ack: true
+        source:
+          any: true
+          port_protocol:
+            eq: www
+        destination:
+          any: true
+          port_protocol:
+            eq: telnet
+        dscp: af11
