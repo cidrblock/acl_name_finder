@@ -35,8 +35,8 @@ class LookupModule(LookupBase):
     def run(self, terms, variables, **kwargs):
         gathered = kwargs.get("gathered")
         grant = kwargs.get("grant")
-        if grant not in ["allow", "deny"]:
-            raise AnsibleLookupError("Grant must be allow or deny")
+        if grant not in ["permit", "deny"]:
+            raise AnsibleLookupError("Grant must be permit or deny")
 
         if "source" in kwargs:
             try:
