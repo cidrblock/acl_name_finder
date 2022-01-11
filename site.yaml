@@ -19,7 +19,7 @@
       that: names == [110] 
 
   - set_fact:
-      names: "{{ lookup('get_name', gathered=gathered, destination='192.0.4.0/25', grant='allow', wantlist=True) }}"
+      names: "{{ lookup('get_name', gathered=gathered, destination='192.0.4.0/25', grant='permit', wantlist=True) }}"
   - assert:
       that: names == [] 
   
