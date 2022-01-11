@@ -1,0 +1,55 @@
+#  ██████  ███████ ██    ██ ███    ██ ███████ ████████      █████  ██      ██     ██  █████  ██    ██ ███████      ██████  ███    ██ 
+#  ██   ██ ██      ██    ██ ████   ██ ██         ██        ██   ██ ██      ██     ██ ██   ██  ██  ██  ██          ██    ██ ████   ██ 
+#  ██   ██ █████   ██    ██ ██ ██  ██ █████      ██        ███████ ██      ██  █  ██ ███████   ████   ███████     ██    ██ ██ ██  ██ 
+#  ██   ██ ██       ██  ██  ██  ██ ██ ██         ██        ██   ██ ██      ██ ███ ██ ██   ██    ██         ██     ██    ██ ██  ██ ██ 
+#  ██████  ███████   ████   ██   ████ ███████    ██        ██   ██ ███████  ███ ███  ██   ██    ██    ███████      ██████  ██   ████ 
+#                                                                                                                                    
+#  ansible-playbook devnet_show.yml -v
+---
+- hosts: ciscodevnet
+  gather_facts: no
+  collections:
+    - cisco.ios  # pinned at 2.5.0 due to bug in 2.6.0 latest release.
+  vars:
+    ansible_python_interpreter: "{{ ansible_playbook_python }}"
+  tasks:
+    - name: "ios.acl: fetch ACL(s) from device in network resource module format"
+      cisco.ios.ios_acls:
+        config:
+        state: gathered
+      register: r_acls
+      connection: ansible.netcommon.network_cli
+    
+    - name: "ios.acl: debug gathered ACL(s) output as json"
+      ansible.builtin.debug:
+        msg: "{{ r_acls.gathered | to_nice_json(indent=2) }}"
+      delegate_to: localhost
+    
+    - name: "ios.acl: debug gathered ACL(s) output as yaml"
+      ansible.builtin.debug:
+        msg: "{{ {'acls': r_acls['gathered']} | to_nice_yaml(explicit_start=True, indent=2, width=1337) }}"
+      delegate_to: localhost
+
+      #TASK [ios.acl: debug gathered ACL(s) output as yaml] ****************
+      #ok: [iosxe -> localhost] => {}
+      #
+      #MSG:
+      #
+      #---
+      #acls:
+      #- acls:
+      #  - acl_type: extended
+      #    name: meraki-fqdn-dns
+      #  - aces:
+      #    - grant: deny
+      #      sequence: 10
+      #      source:
+      #        address: 192.168.1.200
+      #    - grant: permit
+      #      sequence: 20
+      #      source:
+      #        address: 192.168.2.0
+      #        wildcard_bits: 0.0.0.255
+      #    acl_type: standard
+      #    name: std_acl
+      #  afi: ipv4
