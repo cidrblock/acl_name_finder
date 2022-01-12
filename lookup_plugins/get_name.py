@@ -74,7 +74,7 @@ class LookupModule(LookupBase):
             if afi["afi"] == afi_type:
                 for acl in afi["acls"]:
                     name = acl["name"]
-                    for ace in acl["aces"]:
+                    for ace in acl.get("aces", []):
                         source_matched = False
                         destination_matched = False
                         if "grant" in ace and ace["grant"] == grant:
