@@ -1,0 +1,56 @@
+- hosts: devnet-ao
+  gather_facts: False
+  tasks:
+ 
+  - name: Remove the test ACL
+    cisco.ios.ios_acls:
+      config:
+      - afi: ipv4
+        acls:
+        - name: ansible-test-std
+          acl_type: standard
+      state: deleted
+  
+  - name: Deploy the ACL
+    cisco.ios.ios_config:
+      lines:
+      - ip access-list standard ansible-test-std
+      - permit host 172.16.1.1
+      - permit 172.16.2.0 0.0.0.255
+      - deny any
+  
+  - name: Gather the ACLs
+    cisco.ios.ios_acls:
+      state: gathered
+    register: gathered_acls
+  
+  - name: Remove the test ACL
+    cisco.ios.ios_acls:
+      config:
+      - afi: ipv4
+        acls:
+        - name: ansible-test-std
+          acl_type: standard
+      state: deleted
+  
+  - set_fact:
+      names: "{{ lookup('get_name', gathered=gathered_acls.gathered, destination='172.16.1.1', grant='permit', wantlist=True) }}"
+  - assert:
+      that: "{{ 'ansible-test-std' in names }}"
+  
+  - set_fact:
+      names: "{{ lookup('get_name', gathered=gathered_acls.gathered, destination='172.16.2.0/24', grant='permit', wantlist=True) }}"
+  - assert:
+      that: "{{ 'ansible-test-std' in names }}"
+  
+  - set_fact:
+      names: "{{ lookup('get_name', gathered=gathered_acls.gathered, destination='10.1.1.1', grant='deny', wantlist=True) }}"
+  - assert:
+      that: "{{ 'ansible-test-std' in names }}"
+
+  
+
+  
+
+
+ 

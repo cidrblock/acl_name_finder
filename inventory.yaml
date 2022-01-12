@@ -1,0 +1,14 @@
+all:
+  vars:
+    ansible_become: True
+    ansible_become_method: enable
+    ansible_connection: ansible.netcommon.network_cli
+    ansible_python_interpreter: python
+    ansible_network_cli_ssh_type: libssh
+
+  hosts:
+    devnet-ao:
+      ansible_host: 131.226.217.143
+      ansible_user: developer
+      ansible_password: C1sco12345
+      ansible_network_os: cisco.ios.ios
