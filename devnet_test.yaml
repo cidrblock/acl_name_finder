@@ -24,6 +24,16 @@
       state: gathered
     register: gathered_acls
   
+  - name: Dump the acls as yaml
+    copy: 
+      content: "{{ gathered_acls|to_nice_yaml }}"
+      dest: devnet_test_std_gathered.yaml
+  
+  - name: Dump the acls as paths
+    copy:
+      content: "{{ gathered_acls|ansible.utils.to_paths|to_nice_yaml }}"
+      dest: devnet_test_std_gathered_paths.yaml
+
   - name: Remove the test ACL
     cisco.ios.ios_acls:
       config:

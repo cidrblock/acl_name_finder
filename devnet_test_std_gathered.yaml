@@ -1,0 +1,56 @@
+changed: false
+failed: false
+gathered:
+-   acls:
+    -   aces:
+        -   grant: permit
+            sequence: 10
+            source:
+                address: 1.1.1.1
+        -   grant: permit
+            sequence: 20
+            source:
+                address: 2.2.2.2
+        acl_type: standard
+        name: '1'
+    -   aces:
+        -   grant: permit
+            sequence: 10
+            source:
+                address: 172.16.1.1
+        -   grant: permit
+            sequence: 20
+            source:
+                address: 172.16.2.0
+                wildcard_bits: 0.0.0.255
+        -   grant: deny
+            sequence: 30
+            source:
+                address: any
+        acl_type: standard
+        name: ansible-test-std
+    -   acl_type: extended
+        name: meraki-fqdn-dns
+    -   aces:
+        -   grant: deny
+            sequence: 10
+            source:
+                address: 192.168.1.200
+        -   grant: permit
+            sequence: 20
+            source:
+                address: 192.168.2.0
+                wildcard_bits: 0.0.0.255
+        acl_type: standard
+        name: std_acl
+    -   aces:
+        -   destination:
+                any: true
+            grant: permit
+            protocol: tcp
+            sequence: 10
+            source:
+                any: true
+        acl_type: extended
+        name: test
+    afi: ipv4
